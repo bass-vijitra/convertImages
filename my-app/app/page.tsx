@@ -5,6 +5,7 @@ import UploadButton from "./components/UploadButton";
 import ImagePreview from "./components/ImagePreview";
 import ImageList from "./components/ImageList";
 import ConvertButton from "./components/ConvertButton";
+import AnimatedBorderImage from "./components/AnimatedBorderImage";
 import { convertToWebP } from "./utils/imageConverter";
 import { generateZipBlob, triggerDownload } from "./utils/zipDownload";
 import type { ImageFile } from "./types";
@@ -91,11 +92,11 @@ export default function Home() {
           prev.map((item) =>
             item.id === img.id
               ? {
-                  ...item,
-                  status: "error" as const,
-                  errorMessage:
-                    error instanceof Error ? error.message : "Unknown error",
-                }
+                ...item,
+                status: "error" as const,
+                errorMessage:
+                  error instanceof Error ? error.message : "Unknown error",
+              }
               : item
           )
         );
@@ -198,7 +199,7 @@ export default function Home() {
               </h2>
               <p className="text-zinc-400 text-base sm:text-lg max-w-lg mx-auto">
                 Drop your PNG or JPG images and convert them to optimized WebP
-                format. Everything runs locally in your browser.
+                format.
               </p>
             </div>
           )}
@@ -245,11 +246,26 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="w-full border-t border-zinc-800/60 mt-16">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex items-center justify-center">
-          <p className="text-xs text-zinc-600">
-            All conversions happen locally in your browser. No images are
-            uploaded to any server.
-          </p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+          {/* Spacer for perfect centering on desktop */}
+          <div className="hidden sm:block flex-1"></div>
+
+          {/* Centered Text */}
+          <div className="flex-1 flex justify-center text-center">
+            <p className="text-xs text-zinc-600">
+              All conversions happen locally in your browser. No images are
+              uploaded to any server.
+            </p>
+          </div>
+
+          {/* Right Aligned Image */}
+          <div className="flex-1 flex justify-center sm:justify-end">
+            <AnimatedBorderImage
+              src="/Images/kobecoolkid_converted.jpg"
+              alt="Kobe Cool Kid"
+              size={100}
+            />
+          </div>
         </div>
       </footer>
     </div>
