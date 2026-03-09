@@ -6,13 +6,14 @@ import ImagePreview from "./components/ImagePreview";
 import ImageList from "./components/ImageList";
 import ConvertButton from "./components/ConvertButton";
 import { convertToWebP } from "./utils/imageConverter";
-import { triggerDownload } from "./utils/zipDownload";
+import { generateZipBlob, triggerDownload } from "./utils/zipDownload";
 import type { ImageFile } from "./types";
 
 export default function Home() {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [isConverting, setIsConverting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [zipBlob, setZipBlob] = useState<Blob | null>(null);
 
   // Generate unique ID
   const generateId = () =>
@@ -24,6 +25,7 @@ export default function Home() {
       // Reset completion state when adding new files
       if (isComplete) {
         setIsComplete(false);
+        setZipBlob(null);
       }
 
       const newImages: ImageFile[] = files.map((file) => ({
@@ -100,26 +102,41 @@ export default function Home() {
       }
     }
 
+    // Pre-generate ZIP blob so download can be triggered synchronously
+    // (Chrome requires link.click() in the same user gesture context)
+    const latestImages = await new Promise<ImageFile[]>((resolve) => {
+      setImages((prev) => {
+        resolve(prev);
+        return prev;
+      });
+    });
+
+    const successFiles = latestImages
+      .filter((img) => img.status === "success" && img.convertedBlob)
+      .map((img) => ({ name: img.name, blob: img.convertedBlob! }));
+
+    if (successFiles.length > 0) {
+      const blob = await generateZipBlob(successFiles);
+      setZipBlob(blob);
+    }
+
     setIsConverting(false);
     setIsComplete(true);
   }, [images]);
 
-  // Download each converted WebP file individually (no ZIP)
+  // Download pre-generated ZIP — fully synchronous to preserve user gesture context
   const handleDownload = useCallback(() => {
-    const successImages = images.filter(
-      (img) => img.status === "success" && img.convertedBlob
-    );
-    for (const img of successImages) {
-      const webpName = img.name.replace(/\.(png|jpe?g)$/i, ".webp");
-      triggerDownload(img.convertedBlob!, webpName);
+    if (zipBlob) {
+      triggerDownload(zipBlob, "converted-images.zip");
     }
-  }, [images]);
+  }, [zipBlob]);
 
   // Clear all images
   const handleClearAll = useCallback(() => {
     images.forEach((img) => URL.revokeObjectURL(img.preview));
     setImages([]);
     setIsComplete(false);
+    setZipBlob(null);
   }, [images]);
 
   const successCount = images.filter((img) => img.status === "success").length;
