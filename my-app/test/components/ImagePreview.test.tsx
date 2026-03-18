@@ -11,7 +11,8 @@ describe('ImagePreview Component', () => {
       name: 'test1.png',
       size: 1024 * 500, // 500KB
       preview: 'blob:mock1',
-      status: 'pending'
+      status: 'pending',
+      targetSizeKB: 300
     },
     {
       id: '2',
@@ -19,7 +20,8 @@ describe('ImagePreview Component', () => {
       name: 'test2.jpg',
       size: 1024 * 1024 * 2.5, // 2.5MB
       preview: 'blob:mock2',
-      status: 'pending'
+      status: 'pending',
+      targetSizeKB: 300
     }
   ];
 

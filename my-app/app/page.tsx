@@ -5,8 +5,9 @@ import UploadButton from "./components/UploadButton";
 import ImagePreview from "./components/ImagePreview";
 import ImageList from "./components/ImageList";
 import ConvertButton from "./components/ConvertButton";
+import FileSizeControl from "./components/FileSizeControl";
 import AnimatedBorderImage from "./components/AnimatedBorderImage";
-import { convertToWebP } from "./utils/imageConverter";
+import { convertToWebPWithTargetSize } from "./utils/imageConverter";
 import { generateZipBlob, triggerDownload } from "./utils/zipDownload";
 import type { ImageFile } from "./types";
 
@@ -36,6 +37,7 @@ export default function Home() {
         size: file.size,
         preview: URL.createObjectURL(file),
         status: "pending" as const,
+        targetSizeKB: 300,
       }));
 
       setImages((prev) => [...prev, ...newImages]);
@@ -76,7 +78,7 @@ export default function Home() {
       );
 
       try {
-        const blob = await convertToWebP(img.file);
+        const blob = await convertToWebPWithTargetSize(img.file, img.targetSizeKB);
 
         // Set to success
         setImages((prev) =>
@@ -139,6 +141,21 @@ export default function Home() {
     setIsComplete(false);
     setZipBlob(null);
   }, [images]);
+
+  // Target size controls
+  const handleSetAllMin = useCallback(() => {
+    setImages((prev) => prev.map((img) => ({ ...img, targetSizeKB: 85 })));
+  }, []);
+
+  const handleSetAllMax = useCallback(() => {
+    setImages((prev) => prev.map((img) => ({ ...img, targetSizeKB: 300 })));
+  }, []);
+
+  const handleSetTargetSize = useCallback((id: string, sizeKB: number) => {
+    setImages((prev) =>
+      prev.map((img) => (img.id === id ? { ...img, targetSizeKB: sizeKB } : img))
+    );
+  }, []);
 
   const successCount = images.filter((img) => img.status === "success").length;
 
@@ -227,6 +244,17 @@ export default function Home() {
               <ImageList images={images} />
             </div>
           </div>
+        )}
+
+        {/* Target File Size Controls */}
+        {images.length > 0 && (
+          <FileSizeControl
+            images={images}
+            onSetAllMin={handleSetAllMin}
+            onSetAllMax={handleSetAllMax}
+            onSetTargetSize={handleSetTargetSize}
+            disabled={isConverting}
+          />
         )}
 
         {/* Convert / Download Button */}

@@ -11,7 +11,8 @@ describe('ImageList Component', () => {
       name: 'test1.png',
       size: 1024,
       preview: 'blob:mock1',
-      status: 'pending'
+      status: 'pending',
+      targetSizeKB: 300
     },
     {
       id: '2',
@@ -19,7 +20,8 @@ describe('ImageList Component', () => {
       name: 'test2.jpg',
       size: 2048,
       preview: 'blob:mock2',
-      status: 'converting'
+      status: 'converting',
+      targetSizeKB: 300
     },
     {
       id: '3',
@@ -27,7 +29,8 @@ describe('ImageList Component', () => {
       name: 'test3.jpg',
       size: 4096,
       preview: 'blob:mock3',
-      status: 'success'
+      status: 'success',
+      targetSizeKB: 300
     },
     {
       id: '4',
@@ -36,7 +39,8 @@ describe('ImageList Component', () => {
       size: 8192,
       preview: 'blob:mock4',
       status: 'error',
-      errorMessage: 'Conversion failed'
+      errorMessage: 'Conversion failed',
+      targetSizeKB: 300
     }
   ];
 

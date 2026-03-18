@@ -7,6 +7,7 @@ export interface ImageFile {
   size: number;
   preview: string;
   status: ConvertStatus;
+  targetSizeKB: number; // Target output size in KB (85–300)
   convertedBlob?: Blob;
   errorMessage?: string;
 }
