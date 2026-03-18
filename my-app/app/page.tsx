@@ -143,12 +143,8 @@ export default function Home() {
   }, [images]);
 
   // Target size controls
-  const handleSetAllMin = useCallback(() => {
-    setImages((prev) => prev.map((img) => ({ ...img, targetSizeKB: 85 })));
-  }, []);
-
-  const handleSetAllMax = useCallback(() => {
-    setImages((prev) => prev.map((img) => ({ ...img, targetSizeKB: 300 })));
+  const handleSetAllCustom = useCallback((sizeKB: number) => {
+    setImages((prev) => prev.map((img) => ({ ...img, targetSizeKB: sizeKB })));
   }, []);
 
   const handleSetTargetSize = useCallback((id: string, sizeKB: number) => {
@@ -250,8 +246,7 @@ export default function Home() {
         {images.length > 0 && (
           <FileSizeControl
             images={images}
-            onSetAllMin={handleSetAllMin}
-            onSetAllMax={handleSetAllMax}
+            onSetAllCustom={handleSetAllCustom}
             onSetTargetSize={handleSetTargetSize}
             disabled={isConverting}
           />

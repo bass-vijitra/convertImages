@@ -29,35 +29,32 @@ describe('FileSizeControl Component', () => {
     const { container } = render(
       <FileSizeControl
         images={[]}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={vi.fn()}
         onSetTargetSize={vi.fn()}
       />
     );
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('renders header and bulk buttons', () => {
+  it('renders header and Quick Presets dropdown', () => {
     render(
       <FileSizeControl
         images={mockImages}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={vi.fn()}
         onSetTargetSize={vi.fn()}
       />
     );
 
     expect(screen.getByText('Target File Size')).toBeInTheDocument();
-    expect(screen.getByText(/Set All to Min/i)).toBeInTheDocument();
-    expect(screen.getByText(/Set All to Max/i)).toBeInTheDocument();
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
+    expect(screen.getByText('Quick Presets...')).toBeInTheDocument();
   });
 
   it('renders per-image rows with filenames', () => {
     render(
       <FileSizeControl
         images={mockImages}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={vi.fn()}
         onSetTargetSize={vi.fn()}
       />
     );
@@ -66,34 +63,21 @@ describe('FileSizeControl Component', () => {
     expect(screen.getByText('test2.jpg')).toBeInTheDocument();
   });
 
-  it('calls onSetAllMin when Set All to Min is clicked', () => {
-    const handleSetAllMin = vi.fn();
+  it('calls onSetAllCustom when a Quick Preset is selected', () => {
+    const handleSetAllCustom = vi.fn();
     render(
       <FileSizeControl
         images={mockImages}
-        onSetAllMin={handleSetAllMin}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={handleSetAllCustom}
         onSetTargetSize={vi.fn()}
       />
     );
 
-    fireEvent.click(screen.getByText(/Set All to Min/i));
-    expect(handleSetAllMin).toHaveBeenCalledTimes(1);
-  });
-
-  it('calls onSetAllMax when Set All to Max is clicked', () => {
-    const handleSetAllMax = vi.fn();
-    render(
-      <FileSizeControl
-        images={mockImages}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={handleSetAllMax}
-        onSetTargetSize={vi.fn()}
-      />
-    );
-
-    fireEvent.click(screen.getByText(/Set All to Max/i));
-    expect(handleSetAllMax).toHaveBeenCalledTimes(1);
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: '85' } });
+    
+    expect(handleSetAllCustom).toHaveBeenCalledTimes(1);
+    expect(handleSetAllCustom).toHaveBeenCalledWith(85);
   });
 
   it('calls onSetTargetSize when input changes', () => {
@@ -101,8 +85,7 @@ describe('FileSizeControl Component', () => {
     render(
       <FileSizeControl
         images={mockImages}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={vi.fn()}
         onSetTargetSize={handleSetTargetSize}
       />
     );
@@ -121,8 +104,7 @@ describe('FileSizeControl Component', () => {
     render(
       <FileSizeControl
         images={mockImages}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={vi.fn()}
         onSetTargetSize={handleSetTargetSize}
       />
     );
@@ -138,8 +120,7 @@ describe('FileSizeControl Component', () => {
     render(
       <FileSizeControl
         images={mockImages}
-        onSetAllMin={vi.fn()}
-        onSetAllMax={vi.fn()}
+        onSetAllCustom={vi.fn()}
         onSetTargetSize={vi.fn()}
         disabled={true}
       />
@@ -154,5 +135,7 @@ describe('FileSizeControl Component', () => {
     buttons.forEach((btn) => {
       expect(btn).toBeDisabled();
     });
+
+    expect(screen.getByRole('combobox')).toBeDisabled();
   });
 });
